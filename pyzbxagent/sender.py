@@ -20,7 +20,7 @@
 from pyzbxagent.logger import get_logger
 from time import time
 from struct import pack, unpack
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import getfqdn, socket, AF_INET, SOCK_STREAM
 try:
     from json import dumps, loads
 except ImportError:
@@ -47,7 +47,7 @@ class Sender(object):
         self._process_date = None
         self._next_send_date = time()
         self._logger = get_logger()
-        self._host = 'makem.l8failed.net'
+        self._host = getfqdn()
 
     #----------------------------------------------------------------------
     def send(self, process_date=None, force=False):
