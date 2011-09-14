@@ -94,7 +94,7 @@ class PyZabbixAgentApp(object):
             help=u'configuration file')
 
         option_parser.add_option(
-            '-d', action='store_false',
+            '-d', action='store_true',
             dest='daemonize',
             default=False,
             help=u'daemonize')
