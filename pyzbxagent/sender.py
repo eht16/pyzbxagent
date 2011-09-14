@@ -19,9 +19,13 @@
 
 from pyzbxagent.logger import get_logger
 from time import time
-from json import dumps, loads
 from struct import pack, unpack
 from socket import socket, AF_INET, SOCK_STREAM
+try:
+    from json import dumps, loads
+except ImportError:
+    # for Python 2.5
+    from simplejson import dumps, loads
 
 
 # Zabbix sender protocol header
