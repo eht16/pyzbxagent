@@ -240,7 +240,7 @@ class PyZabbixAgentApp(object):
             # try to shutdown ourselves as clean as possible and just see how far it goes
             try:
                 self.shutdown()
-            except:
+            except Exception:
                 pass
             return 1
         else:

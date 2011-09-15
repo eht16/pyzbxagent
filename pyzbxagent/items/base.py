@@ -73,7 +73,7 @@ class Item(object):
     def update(self):
         try:
             result = self._update()
-        except Exception, e:
+        except Exception:
             raise
         else:
             self._update_next_process_date()
