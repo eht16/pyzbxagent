@@ -1,0 +1,6 @@
+*.py
+*.pyc
+conf/pyzbxagent-local.conf
+log/pyzbxagent.log
+var/pyzbxagent.db
+var/pyzbxagent.pid
