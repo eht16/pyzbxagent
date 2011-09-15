@@ -29,7 +29,6 @@ from time import time
 class Item(object):
     """"""
 
-    _name = None
     _keys = None
 
     #----------------------------------------------------------------------
@@ -52,10 +51,6 @@ class Item(object):
     #----------------------------------------------------------------------
     def _fetch_update_interval(self, config, section):
         self._update_interval = config.getint(section, 'update_interval')
-
-    #----------------------------------------------------------------------
-    def get_key(self):
-        return self._name
 
     #----------------------------------------------------------------------
     def get_name(self):
