@@ -50,6 +50,7 @@ class Sender(object):
         self._send_interval = send_interval
         self._simulate = simulate
         self._process_date = None
+        self._force = None
         self._next_send_date = time()
         self._logger = get_logger()
         self._host = getfqdn()
@@ -57,10 +58,9 @@ class Sender(object):
     #----------------------------------------------------------------------
     def send(self, process_date=None, force=False):
         self._store_process_date(process_date)
+        self._store_force(force)
         if force or self._sending_data_is_due():
             self._update_next_send_date()
-            forced = ' (forced)' if force else ''
-            self._logger.debug('Send data to Zabbix server%s' % forced)
             self._send_pending_data()
 
     #----------------------------------------------------------------------
@@ -69,6 +69,10 @@ class Sender(object):
             self._process_date = time()
         else:
             self._process_date = process_date
+
+    #----------------------------------------------------------------------
+    def _store_force(self, force):
+        self._force = force
 
     #----------------------------------------------------------------------
     def _sending_data_is_due(self):
@@ -92,7 +96,9 @@ class Sender(object):
         chunk_size = 200
         items = self._database.query_pending_items()
 
-        #~ items = items[:5]
+        forced = ' (forced)' if self._force else ''
+        self._logger.debug('Send a total of %s items to Zabbix server%s' % (len(items), forced))
+
         # process items in 'chunk_size' chunks
         # (similar to zabbix_sender which processes 250 items at once)
         while items:
