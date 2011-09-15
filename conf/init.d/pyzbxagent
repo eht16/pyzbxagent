@@ -10,10 +10,11 @@
 
 set +e   # Don't exit on error status
 
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-DAEMON=/home/user/pyzbxagent/pyzbxagent.py
-PIDFILE=/home/user/pyzbxagent/var/pyzbxagent.pid
-NAME=pyzbxagent
+USER=user
+ROOT=/home/user/pyzbxagent
+DAEMON=$ROOT/pyzbxagent.py
+PIDFILE=$ROOT/var/pyzbxagent.pid
+NAME=pyzbxagent.py
 DESC="Simple Zabbix Agent"
 OPTS="-d"
 
@@ -22,12 +23,12 @@ test -x $DAEMON || exit 0
 case "$1" in
     start)
         echo -n "Starting $DESC: "
-        start-stop-daemon --start --user user --quiet --pidfile $PIDFILE --exec $DAEMON -- $OPTS
+        start-stop-daemon --start --user $USER --quiet --pidfile $PIDFILE --exec $DAEMON -- $OPTS
         echo "$NAME."
         ;;
     stop)
         echo -n "Stopping $DESC: "
-        start-stop-daemon --stop --user user --quiet --pidfile $PIDFILE --name $NAME
+        start-stop-daemon --stop --user $USER --quiet --pidfile $PIDFILE --name $NAME
         echo "$NAME."
         ;;
   restart|force-reload)
