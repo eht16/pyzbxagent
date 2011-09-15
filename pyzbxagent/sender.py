@@ -26,6 +26,7 @@ from socket import (
     error as SocketError,
     getfqdn,
     socket)
+import re
 try:
     from json import dumps, loads
 except ImportError:
@@ -35,6 +36,7 @@ except ImportError:
 
 # Zabbix sender protocol header
 ZBX_HEADER = '''ZBXD\1'''
+ZBX_RESPONSE = re.compile('Processed ([0-9]*) Failed ([0-9]*) Total ([0-9]*) Seconds spent.*')
 
 
 ########################################################################
@@ -97,13 +99,15 @@ class Sender(object):
         items = self._database.query_pending_items()
 
         forced = ' (forced)' if self._force else ''
-        self._logger.debug('Send a total of %s items to Zabbix server%s' % (len(items), forced))
+        self._logger.info('Send a total of %s items to Zabbix server%s' % (len(items), forced))
 
         # process items in 'chunk_size' chunks
         # (similar to zabbix_sender which processes 250 items at once)
         while items:
             self._send_items(items[:chunk_size])
             del items[:chunk_size]
+
+        self._logger.info('Items successfully sent to Zabbix server')
 
     #----------------------------------------------------------------------
     def _send_items(self, items):
@@ -114,8 +118,14 @@ class Sender(object):
         else:
             # clean up
             self._database.delete_items(items)
-            processed = self._clean_processed_message(result['info'])
-            self._logger.info('Processed a chunk of %s items (%s)' % (len(items), processed))
+            processed, failed, total = self._parse_processed_message(result['info'])
+            result = 'Processed %s Failed %s Total %s' % (processed, failed, total)
+            if failed:
+                # if there are any failed items, i.e. items the server did not accept,
+                # log them with a higher level
+                self._logger.warning('Processed a chunk of %s items (%s)' % (len(items), result))
+            else:
+                self._logger.debug('Processed a chunk of %s items (%s)' % (len(items), result))
 
     #----------------------------------------------------------------------
     def _try_to_send_items(self, items):
@@ -136,6 +146,7 @@ class Sender(object):
     #----------------------------------------------------------------------
     def _send_request(self, request):
         if self._simulate:
+            # fake message
             return dict(info='Processed 0 Failed 0 Total 0 Seconds spent 0')
 
         request_length = len(request)
@@ -173,7 +184,12 @@ class Sender(object):
         return response
 
     #----------------------------------------------------------------------
-    def _clean_processed_message(self, result):
-        end = result.find(' Seconds')
-        return result[:end]
+    def _parse_processed_message(self, result):
+        match = ZBX_RESPONSE.match(result)
+        try:
+            processed, failed, total = map(int, match.groups())
+        except Exception:
+            processed, failed, total = 0, 0, 0
+
+        return processed, failed, total
 
