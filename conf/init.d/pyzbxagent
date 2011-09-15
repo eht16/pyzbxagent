@@ -14,7 +14,7 @@ USER=user
 ROOT=/home/user/pyzbxagent
 DAEMON=$ROOT/pyzbxagent.py
 PIDFILE=$ROOT/var/pyzbxagent.pid
-NAME=pyzbxagent.py
+NAME=pyzbxagent
 DESC="Simple Zabbix Agent"
 OPTS="-d"
 
@@ -28,7 +28,7 @@ case "$1" in
         ;;
     stop)
         echo -n "Stopping $DESC: "
-        start-stop-daemon --stop --user $USER --quiet --pidfile $PIDFILE --name $NAME
+        start-stop-daemon --stop --user $USER --quiet --pidfile $PIDFILE
         echo "$NAME."
         ;;
   restart|force-reload)
