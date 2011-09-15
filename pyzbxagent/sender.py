@@ -20,7 +20,12 @@
 from pyzbxagent.logger import get_logger
 from time import time
 from struct import pack, unpack
-from socket import getfqdn, socket, AF_INET, SOCK_STREAM
+from socket import (
+    AF_INET,
+    SOCK_STREAM,
+    error as SocketError,
+    getfqdn,
+    socket)
 try:
     from json import dumps, loads
 except ImportError:
@@ -77,6 +82,8 @@ class Sender(object):
     def _send_pending_data(self):
         try:
             self._try_to_send_pending_data()
+        except SocketError, e:
+            self._logger.warn('A socket error occurred while sending items: %s' % e)
         except Exception, e:
             self._logger.warn('An error occurred while sending items: %s' % e, exc_info=True)
 
