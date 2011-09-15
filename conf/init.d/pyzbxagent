@@ -12,7 +12,7 @@ set +e   # Don't exit on error status
 
 USER=user
 ROOT=/home/user/pyzbxagent
-DAEMON=$ROOT/pyzbxagent.py
+DAEMON=$ROOT/pyzabbixagent
 PIDFILE=$ROOT/var/pyzbxagent.pid
 NAME=pyzbxagent
 DESC="Simple Zabbix Agent"
