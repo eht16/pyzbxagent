@@ -22,6 +22,7 @@ from sqlite3 import connect
 
 
 DB_INIT_STATEMENT = '''
+    VACUUM;
     CREATE TABLE IF NOT EXISTS `item_values`
     (
         `id` INTEGER PRIMARY KEY,
