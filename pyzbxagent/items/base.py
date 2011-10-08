@@ -29,28 +29,35 @@ from time import time
 class Item(object):
     """"""
 
-    _keys = None
-
     #----------------------------------------------------------------------
     def __init__(self, config, section):
         self._config = config
         self._section = section
-        self._update_interval = None
         self._next_process_date = time()
-        self._assert_have_keys_attribute()
-        self._fetch_update_interval(config, section)
+        self._update_interval = None
+        self._keys = None
+        self._update_results = None
+        self._fetch_item_keys()
+        self._fetch_update_interval()
         self._logger = get_logger()
         self._logger.debug('Setup item %s' % self.__class__.__name__)
+
+    #----------------------------------------------------------------------
+    def _fetch_item_keys(self):
+        item_keys = self._config.get(self._section, 'item_keys')
+        if item_keys:
+            self._keys = set(item_keys.split(','))
+        self._assert_have_keys_attribute()
 
     #----------------------------------------------------------------------
     def _assert_have_keys_attribute(self):
         if not self._keys:
             message = u'Subclasses of Item must set the _keys attribute with the item\'s keys'
-            raise AttributeError(message)
+            raise RuntimeError(message)
 
     #----------------------------------------------------------------------
-    def _fetch_update_interval(self, config, section):
-        self._update_interval = config.getint(section, 'update_interval')
+    def _fetch_update_interval(self):
+        self._update_interval = self._config.getint(self._section, 'update_interval')
 
     #----------------------------------------------------------------------
     def get_name(self):
@@ -66,13 +73,21 @@ class Item(object):
 
     #----------------------------------------------------------------------
     def update(self):
+        self._reset_update_defaults()
         try:
-            result = self._update()
+            self._update()
         except Exception:
+            self._reset_update_defaults()
             raise
         else:
+            result = self._update_results
+            self._reset_update_defaults()
             self._update_next_process_date()
             return result
+
+    #----------------------------------------------------------------------
+    def _reset_update_defaults(self):
+        self._update_results = dict()
 
     #----------------------------------------------------------------------
     def _update_next_process_date(self):
@@ -97,3 +112,18 @@ class Item(object):
             if file_:
                 file_.close()
 
+    #----------------------------------------------------------------------
+    def _handle_key(self, key, callback=None, value=None):
+        """
+        Convenience method to handle optional keys.
+        It checks whether key is one of the enabled keys for this item and if so,
+        it either executes callback and adds its return value to self._update_results for the key
+        or if callback is None, it adds value to self._update_results.
+        """
+        if not hasattr(callback, '__call__') and not value:
+            raise ValueError(u'Either callback or value must be set')
+
+        if key in self._keys:
+            if callback:
+                value = callback()
+            self._update_results[key] = value

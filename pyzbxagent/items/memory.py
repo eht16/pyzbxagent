@@ -29,14 +29,18 @@ MEMINFO_PATH = '/proc/meminfo'
 class Memory(Item):
     """"""
 
-    _keys = [
-        'memory[total]',
-        'memory[used]',
-        'system.swap.size[,total]',
-        'system.swap.size[,used]']
-
     #----------------------------------------------------------------------
     def _update(self):
+        keys = ('memory[total]', 'memory[used]', 'system.swap.size[,total]', 'system.swap.size[,used]')
+        if self._keys.intersection(keys):
+            memory_total, memory_used, swap_total, swap_used = self._get_memory()
+            self._handle_key('memory[total]', value=memory_total)
+            self._handle_key('memory[used]', value=memory_used)
+            self._handle_key('system.swap.size[,total]', value=swap_total)
+            self._handle_key('system.swap.size[,used]', value=swap_used)
+
+    #----------------------------------------------------------------------
+    def _get_memory(self):
         memory_total = 0
         memory_free = 0
         memory_buffers = 0
@@ -65,12 +69,7 @@ class Memory(Item):
         memory_used = memory_total - memory_free - memory_buffers - memory_cached
         swap_used = swap_total - swap_free
 
-        return {
-            'memory[total]':memory_total,
-            'memory[used]':memory_used,
-            'system.swap.size[,total]':swap_total,
-            'system.swap.size[,used]':swap_used,
-        }
+        return memory_total, memory_used, swap_total, swap_used
 
     #----------------------------------------------------------------------
     def _get_value_from_line(self, line):

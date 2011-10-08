@@ -29,14 +29,15 @@ from os.path import isdir, join
 class NumberOfProcesses(Item):
     """"""
 
-    _keys = ['proc.num[]']
-
     #----------------------------------------------------------------------
     def _update(self):
+        self._handle_key('proc.num[]', callback=self._get_proc_num)
+
+    #----------------------------------------------------------------------
+    def _get_proc_num(self):
         result = 0
         for name in listdir('/proc'):
             path = join('/proc', name)
             if isdir(path) and name.isdigit():
                 result += 1
-
-        return {self._keys[0]: result}
+        return result

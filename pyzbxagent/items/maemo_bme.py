@@ -39,10 +39,6 @@ PROPERTY_VOLTAGE_DESIGN = 'battery.voltage.design'
 class MaemoBMEBattery(Item):
     """"""
 
-    _keys = ['maemo.battery.percentage',
-             'maemo.battery.voltage[design]',
-             'maemo.battery.voltage[current]']
-
     #----------------------------------------------------------------------
     def __init__(self, *args, **kwargs):
         super(MaemoBMEBattery, self).__init__(*args, **kwargs)
@@ -61,14 +57,11 @@ class MaemoBMEBattery(Item):
     #----------------------------------------------------------------------
     def _update(self):
         self._init_dbus_if_necessary()
-        # query values from dbus
-        charge_level_percentage = self._get_charge_level()
+        # battery percentage
+        self._handle_key('maemo.battery.percentage', callback=self._get_charge_level)
         # voltage
-        voltage_current, voltage_design = self._get_voltage()
-
-        return {'maemo.battery.percentage': charge_level_percentage,
-                'maemo.battery.voltage[current]': voltage_current,
-                'maemo.battery.voltage[design]': voltage_design}
+        self._handle_key('maemo.battery.voltage[current]', callback=self._get_voltage_current)
+        self._handle_key('maemo.battery.voltage[design]', callback=self._get_voltage_design)
 
     #----------------------------------------------------------------------
     def _get_charge_level(self):
@@ -84,7 +77,11 @@ class MaemoBMEBattery(Item):
         return charge_level_percentage
 
     #----------------------------------------------------------------------
-    def _get_voltage(self):
+    def _get_voltage_current(self):
         voltage_current = self._get_property_method(PROPERTY_VOLTAGE_CURRENT)
+        return voltage_current
+
+    #----------------------------------------------------------------------
+    def _get_voltage_design(self):
         voltage_design = self._get_property_method(PROPERTY_VOLTAGE_DESIGN)
-        return voltage_current, voltage_design
+        return voltage_design

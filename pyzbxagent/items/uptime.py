@@ -32,11 +32,13 @@ UPTIME_PATH = '/proc/uptime'
 class Uptime(Item):
     """"""
 
-    _keys = ['system.uptime']
-
     #----------------------------------------------------------------------
     def _update(self):
+        self._handle_key('system.uptime', callback=self._get_uptime)
+
+    #----------------------------------------------------------------------
+    def _get_uptime(self):
         uptime_file = open(UPTIME_PATH)
         uptime = floor(float(uptime_file.read().split()[0]))
         uptime_file.close()
-        return {self._keys[0]: uptime}
+        return uptime

@@ -31,21 +31,19 @@ from os import getpid
 class PyZbxAgent(Item):
     """"""
 
-    _keys = ['vfs.file.size[pyzbxagent.db]', 'proc.mem[pyzbxagent]']
+    #----------------------------------------------------------------------
+    def __init__(self, *args, **kwargs):
+        super(PyZbxAgent, self).__init__(*args, **kwargs)
+        self._database_path = self._config.get('database', 'name')
 
     #----------------------------------------------------------------------
     def _update(self):
-        database_file_size = self._get_database_file_size()
-        rss = self._get_memory_rss()
-
-        return {
-            'vfs.file.size[pyzbxagent.db]': database_file_size,
-            'proc.mem[pyzbxagent]': rss}
+        self._handle_key('vfs.file.size[pyzbxagent.db]', callback=self._get_database_file_size)
+        self._handle_key('proc.mem[pyzbxagent]', callback=self._get_memory_rss)
 
     #----------------------------------------------------------------------
     def _get_database_file_size(self):
-        path = self._config.get('database', 'name')
-        return getsize(path)
+        return getsize(self._database_path)
 
     #----------------------------------------------------------------------
     def _get_memory_rss(self):

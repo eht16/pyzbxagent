@@ -29,15 +29,11 @@ from os import getloadavg
 class Load(Item):
     """"""
 
-    _keys = [
-        'system.cpu.load[,avg1]',
-        'system.cpu.load[,avg5]',
-        'system.cpu.load[,avg15]']
-
     #----------------------------------------------------------------------
     def _update(self):
-        load1, load5, load15 = getloadavg()
-
-        return {'system.cpu.load[,avg1]': load1,
-                'system.cpu.load[,avg5]': load5,
-                'system.cpu.load[,avg15]': load15}
+        keys = ('system.cpu.load[,avg1]', 'system.cpu.load[,avg5]', 'system.cpu.load[,avg15]')
+        if self._keys.intersection(keys):
+            load1, load5, load15 = getloadavg()
+            self._handle_key('system.cpu.load[,avg1]', value=load1)
+            self._handle_key('system.cpu.load[,avg5]', value=load5)
+            self._handle_key('system.cpu.load[,avg15]', value=load15)

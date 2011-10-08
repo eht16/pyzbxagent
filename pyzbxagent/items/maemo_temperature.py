@@ -34,12 +34,15 @@ TEMP_RAW_PATH = '/sys/devices/platform/omap34xx_temp/temp1_input_raw'
 class MaemoTemperature(Item):
     """"""
 
-    _keys = ['maemo.temperature[temp]', 'maemo.temperature[raw]']
-
     #----------------------------------------------------------------------
     def _update(self):
-        temperature = self._read_file(TEMP_PATH)
-        temperature_raw = self._read_file(TEMP_RAW_PATH)
+        self._handle_key('maemo.temperature[temp]', callback=self._get_temperature)
+        self._handle_key('maemo.temperature[raw]', callback=self._get_temperature_raw)
 
-        return {'maemo.temperature[temp]': int(temperature),
-                'maemo.temperature[raw]': int(temperature_raw)}
+    #----------------------------------------------------------------------
+    def _get_temperature(self):
+        return self._read_file(TEMP_PATH)
+
+    #----------------------------------------------------------------------
+    def _get_temperature_raw(self):
+        return self._read_file(TEMP_RAW_PATH)
