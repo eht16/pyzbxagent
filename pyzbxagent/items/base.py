@@ -52,7 +52,7 @@ class Item(object):
     #----------------------------------------------------------------------
     def _assert_have_keys_attribute(self):
         if not self._keys:
-            message = u'Subclasses of Item must set the _keys attribute with the item\'s keys'
+            message = u'Item %s is enabled but no keys are defined.' % self.__class__.__name__
             raise RuntimeError(message)
 
     #----------------------------------------------------------------------
