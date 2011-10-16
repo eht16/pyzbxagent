@@ -46,7 +46,8 @@ class Item(object):
     def _fetch_item_keys(self):
         item_keys = self._config.get(self._section, 'item_keys')
         if item_keys:
-            self._keys = set(item_keys.split(','))
+            keys = eval(item_keys)
+            self._keys = set(keys)
         self._assert_have_keys_attribute()
 
     #----------------------------------------------------------------------

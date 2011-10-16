@@ -45,7 +45,7 @@ Each item has its own configuration section like the following one:
 class=ClassName
 update_interval=60
 enable=true
-item_keys=sample_item
+item_keys='sample_item1','sample_item2'
 
 The section name must always start with "item_". The following part is the module name
 of the Python module containing the code for this item. This is actually the filename or
@@ -65,6 +65,7 @@ that an item defines multiple keys but not all should be processed. If no keys
 are listed for an item, it is automatically disabled (same effect as enable=false).
 The sample configuration lists all possible keys per item. If you are unsure and
 want to get a list of available keys, check the source code of the items modules.
+Each item_key must be quoted.
 
 
 Init Script
