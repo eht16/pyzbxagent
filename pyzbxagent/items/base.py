@@ -122,7 +122,7 @@ class Item(object):
         it either executes callback and adds its return value to self._update_results for the key
         or if callback is None, it adds value to self._update_results.
         """
-        if not hasattr(callback, '__call__') and not value:
+        if not hasattr(callback, '__call__') and value is None:
             raise ValueError(u'Either callback or value must be set')
 
         if key in self._keys:
