@@ -47,6 +47,7 @@ class Item(object):
         item_keys = self._config.get(self._section, 'item_keys')
         if item_keys:
             keys = eval(item_keys)
+            keys = keys if isinstance(keys, (list, tuple)) else (keys,)
             self._keys = set(keys)
         self._assert_have_keys_attribute()
 
