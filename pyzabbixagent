@@ -204,8 +204,16 @@ class PyZabbixAgentApp(object):
         port = self._config.getint('zabbix', 'port')
         socket_timeout = self._config.getint('zabbix', 'socket_timeout')
         send_interval = self._config.getint('zabbix', 'send_interval')
+        hostname = self._config.get('zabbix', 'hostname')
         simulate = self._config.getboolean('zabbix', 'simulate')
-        self._sender = Sender(server, port, socket_timeout, send_interval, simulate, self._database)
+        self._sender = Sender(
+            server,
+            port,
+            socket_timeout,
+            send_interval,
+            simulate,
+            self._database,
+            hostname)
 
     #----------------------------------------------------------------------
     def _setup_items(self):

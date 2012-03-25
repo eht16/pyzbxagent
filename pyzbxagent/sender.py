@@ -44,7 +44,8 @@ class Sender(object):
     """"""
 
     #----------------------------------------------------------------------
-    def __init__(self, server, port, socket_timeout, send_interval, simulate, database):
+    def __init__(self, server, port, socket_timeout, send_interval, simulate, database,
+            hostname=None):
         self._server = server
         self._port = port
         self._socket_timeout = socket_timeout
@@ -55,7 +56,7 @@ class Sender(object):
         self._force = None
         self._next_send_date = time()
         self._logger = get_logger()
-        self._host = getfqdn()
+        self._hostname = hostname or getfqdn()
 
     #----------------------------------------------------------------------
     def send(self, process_date=None, force=False):
@@ -132,7 +133,7 @@ class Sender(object):
         request_data = list()
         for item in items:
             request_item = dict(
-                host=self._host,
+                host=self._hostname,
                 key=item['key'],
                 value=item['value'],
                 clock=item['entry_date'])
