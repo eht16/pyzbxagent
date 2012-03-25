@@ -22,7 +22,18 @@ Retrieve system load
 
 
 from pyzbxagent.items.base import Item
-from os import getloadavg
+try:
+    from os import getloadavg
+except ImportError:
+    # some systems don't provide getloadavg, try reading /proc/loadavg directly as fallback
+    LOADAVG_PATH = '/proc/loadavg'
+    def getloadavg():
+        loadavg_file = open(LOADAVG_PATH)
+        content = loadavg_file.read()
+        loadavg = content.split()
+        loadavg_file.close()
+        return map(float, loadavg[:3])
+
 
 
 ########################################################################
