@@ -26,7 +26,7 @@ from subprocess import Popen, PIPE
 import re
 
 
-DISKTEMP_REGEXP = re.compile(r'temperature.disk\[(?P<path>[a-zA-Z0-9/]*)(,?(?P<device_type>.*))\]')
+DISKTEMP_REGEXP = re.compile(r'hdd.temp\[(?P<path>[a-zA-Z0-9/]*)(,?(?P<device_type>.*))\]')
 SMARTCTL_TEMPERATURE_ID = '194'
 
 
@@ -100,6 +100,6 @@ class DiskTemperature(Item):
     def _get_key_from_parameters(self, device):
         device_type = self._devices[device]
         if device_type:
-            return 'temperature.disk[%s,%s]' % (device, device_type)
+            return 'hdd.temp[%s,%s]' % (device, device_type)
         else:
-            return 'temperature.disk[%s]' % (device,)
+            return 'hdd.temp[%s]' % (device,)
