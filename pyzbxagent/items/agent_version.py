@@ -17,9 +17,7 @@
 # MA 02110-1301, USA.
 
 """
-Self-monitoring
-
-Currently we monitor the file size of our database and the consumed memory
+Zabbix Agent Version (fake)
 """
 
 from pyzbxagent import PYZBXAGENT_VERSION
