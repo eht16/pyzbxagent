@@ -36,7 +36,7 @@ except ImportError:
 
 # Zabbix sender protocol header
 ZBX_HEADER = '''ZBXD\1'''
-ZBX_RESPONSE = re.compile('Processed ([0-9]*) Failed ([0-9]*) Total ([0-9]*) Seconds spent.*')
+ZBX_RESPONSE = re.compile('Processed:? ([0-9]*);? Failed:? ([0-9]*);? Total:? ([0-9]*);? Seconds spent:?.*', re.IGNORECASE)
 
 
 ########################################################################
